@@ -13,10 +13,6 @@ type VirtualBoxClient struct {
 	managedObjectId string
 }
 
-type HardDisk struct {
-	managedObjectId string
-}
-
 func New(username, password, url string) *VirtualBoxClient {
 	return &VirtualBoxClient{
 		username: username,
@@ -50,17 +46,4 @@ func (svc *VirtualBoxClient) Logon() error {
 
 func (svc *VirtualBoxClient) SessionId() string {
 	return svc.managedObjectId
-}
-
-func (svc *VirtualBoxClient) CreateHardDisk(format, location string) (*HardDisk, error) {
-	svc.Logon()
-
-	request := vboxwebsrv.IVirtualBoxcreateHardDisk{This: svc.managedObjectId, Format: format, Location: location}
-
-	response, err := svc.client.IVirtualBoxcreateHardDisk(&request)
-	if err != nil {
-		return nil, err // TODO: Wrap the error
-	}
-
-	return &HardDisk{managedObjectId: response.Returnval}, nil
 }
