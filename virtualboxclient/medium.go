@@ -22,26 +22,26 @@ func (svc *VirtualBoxClient) CreateHardDisk(format, location string) (*Medium, e
 	return &Medium{client: svc.client, managedObjectId: response.Returnval}, nil
 }
 
-func (m *Medium) CreateBaseStorage(logicalSize int64, variant []*vboxwebsrv.MediumVariant) error {
+func (m *Medium) CreateBaseStorage(logicalSize int64, variant []*vboxwebsrv.MediumVariant) (*Progress, error) {
 	request := vboxwebsrv.IMediumcreateBaseStorage{This: m.managedObjectId, LogicalSize: logicalSize, Variant: variant}
 
-	_, err := m.client.IMediumcreateBaseStorage(&request)
+	response, err := m.client.IMediumcreateBaseStorage(&request)
 	if err != nil {
-		return err // TODO: Wrap the error
+		return nil, err // TODO: Wrap the error
 	}
 
 	// TODO: See if we need to do anything with the response
-	return nil
+	return &Progress{managedObjectId: response.Returnval}, nil
 }
 
-func (m *Medium) DeleteStorage() error {
+func (m *Medium) DeleteStorage() (*Progress, error) {
 	request := vboxwebsrv.IMediumdeleteStorage{This: m.managedObjectId}
 
-	_, err := m.client.IMediumdeleteStorage(&request)
+	response, err := m.client.IMediumdeleteStorage(&request)
 	if err != nil {
-		return err // TODO: Wrap the error
+		return nil, err // TODO: Wrap the error
 	}
 
 	// TODO: See if we need to do anything with the response
-	return nil
+	return &Progress{managedObjectId: response.Returnval}, nil
 }
