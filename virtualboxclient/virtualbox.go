@@ -22,6 +22,19 @@ func New(username, password, url string) *VirtualBox {
 	}
 }
 
+func (vb *VirtualBox) CreateHardDisk(format, location string) (*Medium, error) {
+	vb.Logon()
+
+	request := vboxwebsrv.IVirtualBoxcreateHardDisk{This: vb.managedObjectId, Format: format, Location: location}
+
+	response, err := vb.IVirtualBoxcreateHardDisk(&request)
+	if err != nil {
+		return nil, err // TODO: Wrap the error
+	}
+
+	return &Medium{virtualbox: vb, managedObjectId: response.Returnval}, nil
+}
+
 func (vb *VirtualBox) Logon() error {
 	if vb.managedObjectId != "" {
 		// Already logged in
@@ -41,17 +54,4 @@ func (vb *VirtualBox) Logon() error {
 	vb.managedObjectId = response.Returnval
 
 	return nil
-}
-
-func (vb *VirtualBox) CreateHardDisk(format, location string) (*Medium, error) {
-	vb.Logon()
-
-	request := vboxwebsrv.IVirtualBoxcreateHardDisk{This: vb.managedObjectId, Format: format, Location: location}
-
-	response, err := vb.IVirtualBoxcreateHardDisk(&request)
-	if err != nil {
-		return nil, err // TODO: Wrap the error
-	}
-
-	return &Medium{virtualbox: vb, managedObjectId: response.Returnval}, nil
 }
