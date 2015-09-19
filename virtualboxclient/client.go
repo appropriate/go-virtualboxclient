@@ -43,7 +43,3 @@ func (svc *VirtualBoxClient) Logon() error {
 
 	return nil
 }
-
-func (svc *VirtualBoxClient) SessionId() string {
-	return svc.managedObjectId
-}

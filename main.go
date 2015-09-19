@@ -17,6 +17,4 @@ func main() {
 	if err := client.Logon(); err != nil {
 		log.Fatalf("Unable to log on to vboxwebsrv: %v\n", err)
 	}
-
-	log.Printf("Session ID: %s\n", client.SessionId())
 }
