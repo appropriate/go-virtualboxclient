@@ -35,6 +35,24 @@ func (vb *VirtualBox) CreateHardDisk(format, location string) (*Medium, error) {
 	return &Medium{virtualbox: vb, managedObjectId: response.Returnval}, nil
 }
 
+func (vb *VirtualBox) GetMachines() ([]*Machine, error) {
+	vb.Logon()
+
+	request := vboxwebsrv.IVirtualBoxgetMachines{This: vb.managedObjectId}
+
+	response, err := vb.IVirtualBoxgetMachines(&request)
+	if err != nil {
+		return nil, err // TODO: Wrap the error
+	}
+
+	machines := make([]*Machine, len(response.Returnval))
+	for n, oid := range response.Returnval {
+		machines[n] = &Machine{vb, oid}
+	}
+
+	return machines, nil
+}
+
 func (vb *VirtualBox) Logon() error {
 	if vb.managedObjectId != "" {
 		// Already logged in
