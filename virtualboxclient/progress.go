@@ -1,7 +1,7 @@
 package virtualboxclient
 
 type Progress struct {
-	client *VirtualBoxClient
+	virtualbox *VirtualBox
 
 	managedObjectId string
 }
