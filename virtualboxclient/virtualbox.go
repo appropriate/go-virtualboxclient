@@ -53,6 +53,19 @@ func (vb *VirtualBox) GetMachines() ([]*Machine, error) {
 	return machines, nil
 }
 
+func (vb *VirtualBox) GetSystemProperties() (*SystemProperties, error) {
+	vb.Logon()
+
+	request := vboxwebsrv.IVirtualBoxgetSystemProperties{This: vb.managedObjectId}
+
+	response, err := vb.IVirtualBoxgetSystemProperties(&request)
+	if err != nil {
+		return nil, err // TODO: Wrap the error
+	}
+
+	return &SystemProperties{vb, response.Returnval}, nil
+}
+
 func (vb *VirtualBox) Logon() error {
 	if vb.managedObjectId != "" {
 		// Already logged in
