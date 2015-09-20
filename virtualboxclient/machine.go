@@ -20,6 +20,17 @@ func (m *Machine) GetChipsetType() (*vboxwebsrv.ChipsetType, error) {
 	return response.Returnval, nil
 }
 
+func (m *Machine) GetMediumAttachments() ([]*vboxwebsrv.IMediumAttachment, error) {
+	request := vboxwebsrv.IMachinegetMediumAttachments{This: m.managedObjectId}
+
+	response, err := m.virtualbox.IMachinegetMediumAttachments(&request)
+	if err != nil {
+		return nil, err // TODO: Wrap the error
+	}
+
+	return response.Returnval, nil
+}
+
 func (m *Machine) GetNetworkAdapter(slot uint32) (*NetworkAdapter, error) {
 	request := vboxwebsrv.IMachinegetNetworkAdapter{This: m.managedObjectId, Slot: slot}
 
