@@ -30,3 +30,19 @@ func (m *Machine) GetNetworkAdapter(slot uint32) (*NetworkAdapter, error) {
 
 	return &NetworkAdapter{m.virtualbox, response.Returnval}, nil
 }
+
+func (m *Machine) GetStorageControllers() ([]*StorageController, error) {
+	request := vboxwebsrv.IMachinegetStorageControllers{This: m.managedObjectId}
+
+	response, err := m.virtualbox.IMachinegetStorageControllers(&request)
+	if err != nil {
+		return nil, err // TODO: Wrap the error
+	}
+
+	storageControllers := make([]*StorageController, len(response.Returnval))
+	for i, oid := range response.Returnval {
+		storageControllers[i] = &StorageController{m.virtualbox, oid}
+	}
+
+	return storageControllers, nil
+}
