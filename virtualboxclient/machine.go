@@ -19,3 +19,14 @@ func (m *Machine) GetChipsetType() (*vboxwebsrv.ChipsetType, error) {
 
 	return response.Returnval, nil
 }
+
+func (m *Machine) GetNetworkAdapter(slot uint32) (*NetworkAdapter, error) {
+	request := vboxwebsrv.IMachinegetNetworkAdapter{This: m.managedObjectId, Slot: slot}
+
+	response, err := m.virtualbox.IMachinegetNetworkAdapter(&request)
+	if err != nil {
+		return nil, err // TODO: Wrap the error
+	}
+
+	return &NetworkAdapter{m.virtualbox, response.Returnval}, nil
+}
