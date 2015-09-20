@@ -31,6 +31,17 @@ func (m *Machine) GetNetworkAdapter(slot uint32) (*NetworkAdapter, error) {
 	return &NetworkAdapter{m.virtualbox, response.Returnval}, nil
 }
 
+func (m *Machine) GetSettingsFilePath() (string, error) {
+	request := vboxwebsrv.IMachinegetSettingsFilePath{This: m.managedObjectId}
+
+	response, err := m.virtualbox.IMachinegetSettingsFilePath(&request)
+	if err != nil {
+		return "", err // TODO: Wrap the error
+	}
+
+	return response.Returnval, nil
+}
+
 func (m *Machine) GetStorageControllers() ([]*StorageController, error) {
 	request := vboxwebsrv.IMachinegetStorageControllers{This: m.managedObjectId}
 
