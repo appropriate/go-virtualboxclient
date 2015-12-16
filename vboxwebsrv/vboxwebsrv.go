@@ -15800,7 +15800,7 @@ type IAdditionsFacility struct {
 }
 
 type IMediumAttachment struct {
-	XMLName xml.Name `xml:"http://www.virtualbox.org/ IMediumAttachment"`
+	// XMLName xml.Name `xml:"http://www.virtualbox.org/ IMediumAttachment"`
 
 	Medium         string      `xml:"medium,omitempty"`
 	Controller     string      `xml:"controller,omitempty"`
@@ -20346,6 +20346,8 @@ func (service *VboxPortType) IMachinegetMedium(request *IMachinegetMedium) (*IMa
 //
 //   - InvalidObjectFault
 //   - RuntimeFault
+
+type Returnval *IMediumAttachment
 
 func (service *VboxPortType) IMachinegetMediumAttachmentsOfController(request *IMachinegetMediumAttachmentsOfController) (*IMachinegetMediumAttachmentsOfControllerResponse, error) {
 	response := new(IMachinegetMediumAttachmentsOfControllerResponse)
@@ -33330,17 +33332,20 @@ func (s *SOAPClient) Call(soapAction string, request, response interface{}) erro
 	encoder := xml.NewEncoder(buffer)
 	//encoder.Indent("  ", "    ")
 
-	err := encoder.Encode(envelope)
-	if err == nil {
-		err = encoder.Flush()
-	}
-
-	log.Println(buffer.String())
-	if err != nil {
+	if err := encoder.Encode(envelope); err != nil {
 		return err
 	}
 
+	if err := encoder.Flush(); err != nil {
+		return err
+	}
+
+	// log.Println(buffer.String())
+
 	req, err := http.NewRequest("POST", s.url, buffer)
+	if err != nil {
+		return err
+	}
 	if s.auth != nil {
 		req.SetBasicAuth(s.auth.Login, s.auth.Password)
 	}
@@ -33368,12 +33373,16 @@ func (s *SOAPClient) Call(soapAction string, request, response interface{}) erro
 	defer res.Body.Close()
 
 	rawbody, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return err
+	}
+
 	if len(rawbody) == 0 {
 		log.Println("empty response")
 		return nil
 	}
 
-	log.Println(string(rawbody))
+	// log.Println(string(rawbody))
 	respEnvelope := new(SOAPEnvelope)
 	respEnvelope.Body = SOAPBody{Content: response}
 	err = xml.Unmarshal(rawbody, respEnvelope)
